@@ -5,7 +5,7 @@
 
 //---functions
 
-Laser::Laser(HardwareSerial &leftSerial, HardwareSerial &rightSerial) {
+Laser::Laser(HardwareSerial leftSerial, HardwareSerial rightSerial) {
 	
 	leftSerial_ = leftSerial;
 	rightSerial_ = rightSerial;
@@ -16,7 +16,7 @@ Laser::Laser(HardwareSerial &leftSerial, HardwareSerial &rightSerial) {
 }
 
 bool 
-Laser::readLasers(int &leftLength, int &leftStrength, int &rightLength, int &rightStrength){
+Laser::readLasers(uint16_t &leftLength, int &leftStrength, int &rightLength, int &rightStrength){
 
 	// Data Format for Benewake TFmini
 	// ===============================
@@ -31,6 +31,15 @@ Laser::readLasers(int &leftLength, int &leftStrength, int &rightLength, int &rig
 	// 8) Original signal quality degree
 	// 9) Checksum parity bit (low 8bit), Checksum = Byte1 + Byte2 +...+Byte8. This is only a low 8bit though
 
+	leftSerial_.write((uint8_t)0x42);
+	leftSerial_.write((uint8_t)0x57);
+	leftSerial_.write((uint8_t)0x02);
+	leftSerial_.write((uint8_t)0x00);
+	leftSerial_.write((uint8_t)0x00);
+	leftSerial_.write((uint8_t)0x00);
+	leftSerial_.write((uint8_t)0x01);
+	leftSerial_.write((uint8_t)0x06);
+	
 	//left laser
 	while(leftSerial_.available() >= 9) { //9 bytes of data available
 		//todo add a max wait time
@@ -39,13 +48,13 @@ Laser::readLasers(int &leftLength, int &leftStrength, int &rightLength, int &rig
 			unsigned int t1 = leftSerial_.read(); //Dist_L
 			unsigned int t2 = leftSerial_.read(); //Dist_H
 			t2 <<= 8;
-			t2 += t1;
+			t2 = t2 | t1;
 			leftLength = t2;
 			
 			t1 = leftSerial_.read(); //Strength_L
 			t2 = leftSerial_.read(); //Strength_H
 			t2 <<= 8;
-			t2 += t1;
+			t2 = t2 | t1;
 			leftStrength = t2;
 			
 			for(int i=0; i<3; i++) {

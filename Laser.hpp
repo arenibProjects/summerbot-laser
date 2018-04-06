@@ -11,13 +11,13 @@ class Laser {
 public :
 
 	//constructor
-	Laser(HardwareSerial &leftSerial, HardwareSerial &rightSerial);
+	Laser(HardwareSerial leftSerial, HardwareSerial rightSerial);
 	
 	bool
 	recalibrate(double &xPos, double &yPos, double &angle);
 	
 	bool
-	readLasers(int &leftLength, int &leftStrength, int &rightLength, int &rightStrength);
+	readLasers(uint16_t &leftLength, int &leftStrength, int &rightLength, int &rightStrength);
 	
 private :
 	
